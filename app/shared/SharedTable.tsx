@@ -45,7 +45,7 @@ interface SharedTableProps {
   onResetFilters?: any;
   onSearch?: (searchTerm: string) => void;
   onPageChange?: (page: number) => void;
-  left?:string
+  left?: string;
   pagination?: {
     total: number;
     page: number;
@@ -346,23 +346,23 @@ const SharedTable: React.FC<SharedTableProps> = ({
         isBorder ? "border border-[#ECEDEE]" : ""
       } rounded-xl p-4 relative`}
     >
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center justify-between gap-3 mb-5">
+        <div className="mb-2 sm:mb-0">
           <h2 className="body-1 font-medium text-[#111827]">{title}</h2>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
           {searchable && (
             <input
               type="text"
               placeholder="Search..."
-              className="px-4 py-2 border border-gray-300 rounded-lg w-64 focus:ring-2 focus:ring-orange-500 outline-none"
+              className="px-4 py-2 border border-gray-300 rounded-lg w-full sm:w-64 focus:ring-2 focus:ring-orange-500 outline-none"
               value={search}
               onChange={(e) => handleSearchChange(e.target.value)}
             />
           )}
 
           {filterable && (
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
               {filters.map((filter) => (
                 <FilterDropdown
                   key={filter.key}
@@ -377,7 +377,7 @@ const SharedTable: React.FC<SharedTableProps> = ({
               {showResetButton && (
                 <button
                   onClick={handleResetFilters}
-                  className="flex items-center ml-3 heading-6 font-normal text-[#F87B1B] underline underline-offset-4 transition-colors cursor-pointer"
+                  className="flex items-center heading-6 font-normal text-[#F87B1B] underline underline-offset-4 transition-colors cursor-pointer self-start sm:self-center"
                   title="Reset all filters"
                 >
                   Reset filters
@@ -393,7 +393,7 @@ const SharedTable: React.FC<SharedTableProps> = ({
           <thead>
             <tr className="bg-[#F2F2F2] rounded-lg text-left text-[12px] text-[#111827] uppercase">
               {selectable && (
-                <th className="p-4">
+                <th className="p-4" style={{ width: '50px' }}>
                   <CustomCheckbox
                     checked={
                       paginatedData.length > 0 &&
@@ -404,46 +404,68 @@ const SharedTable: React.FC<SharedTableProps> = ({
                 </th>
               )}
               {columns.map((col) => (
-                <th key={col.key} className="p-3 font-semibold">
+                <th 
+  key={col.key} 
+  className="p-3 font-semibold whitespace-nowrap"
+>
                   {col.label}
                 </th>
               ))}
-              {actions && <th className="p-3">Action</th>}
+              {actions && (
+                <th className="p-3 whitespace-nowrap" style={{ width: '100px' }}>
+                  Action
+                </th>
+              )}
             </tr>
           </thead>
 
           <tbody>
-            {paginatedData.map((row, idx) => (
-              <tr
-                key={idx}
-                className="hover:bg-gray-50 text-[12px] font-normal text-[#414652] border-b border-gray-100"
-              >
-                {selectable && (
-                  <td className="p-4">
-                    <CustomCheckbox
-                      checked={selectedRows.includes(row)}
-                      onChange={(checked) => handleSelectRow(row, checked)}
-                    />
-                  </td>
-                )}
-
-                {columns.map((col) => (
-                  <td key={col.key} className="p-1">
-                    {renderCell(row, col)}
-                  </td>
-                ))}
-
-                {actions && (
-                  <td className="p-4 relative">
-                    {actionsType === "dropdown" ? (
-                      <ActionDropdown actions={actions} row={row} />
-                    ) : (
-                      actions(row)
-                    )}
-                  </td>
-                )}
+            {paginatedData.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length + (selectable ? 1 : 0) + (actions ? 1 : 0)} className="text-center py-12 text-gray-400">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <svg width="48" height="48" fill="none" viewBox="0 0 48 48"><rect width="48" height="48" rx="24" fill="#F6F6F6"/><path d="M16 24h16M24 16v16" stroke="#E28413" strokeWidth="2" strokeLinecap="round"/></svg>
+                    <span className="text-base font-medium">No data found</span>
+                    <span className="text-xs text-gray-400">There are no records to display.</span>
+                  </div>
+                </td>
               </tr>
-            ))}
+            ) : (
+              paginatedData.map((row, idx) => (
+                <tr
+                  key={idx}
+                  className="hover:bg-gray-50 text-[12px] font-normal text-[#414652] border-b border-gray-100"
+                >
+                  {selectable && (
+                    <td className="p-4">
+                      <CustomCheckbox
+                        checked={selectedRows.includes(row)}
+                        onChange={(checked) => handleSelectRow(row, checked)}
+                      />
+                    </td>
+                  )}
+
+                  {columns.map((col) => (
+                    <td 
+                      key={col.key} 
+                      className="p-1 whitespace-nowrap"
+                    >
+                      {renderCell(row, col)}
+                    </td>
+                  ))}
+
+                  {actions && (
+                    <td className="p-4 relative whitespace-nowrap">
+                      {actionsType === "dropdown" ? (
+                        <ActionDropdown actions={actions} row={row} />
+                      ) : (
+                        actions(row)
+                      )}
+                    </td>
+                  )}
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

@@ -1,6 +1,5 @@
 import { apiClient } from "../client";
 
-
 export const posterApi = {
   // GET all posters
   getPosters: async () => {

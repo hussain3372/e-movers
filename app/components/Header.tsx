@@ -129,7 +129,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
         } else {
           setProfileImg("/images/profile.svg");
         }
-      } else if (response?.status === "success" && response?.data) {
+      } else if (response?.status === "success" as any && response?.data) {
         // Handle alternative success structure
         const userData = response.data;
         
@@ -547,7 +547,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* <button
+          <button
             onClick={() => setIsNotificationOpen(!isNotificationOpen)}
             className={`p-1 rounded-lg transition cursor-pointer`}
           >
@@ -557,7 +557,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
               width={40}
               height={40}
             />
-          </button> */}
+          </button>
           <Link href="/profile">
             {isLoadingProfile ? (
               <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse flex items-center justify-center">

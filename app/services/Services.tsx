@@ -44,7 +44,7 @@ const handleOpenService = ()=>{
               exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 100, damping: 20 }}
             >
-             <AddServiceDrawer onClose={()=>{setOpenAddService(false)}} onSuccess={()=>{setOpenAddService(false)}} />
+             <AddServiceDrawer onClose={()=>{setOpenAddService(false)}} />
             </motion.div>
           </>
         )}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import PrimaryBtn from '../ui/buttons/PrimaryBtn';
 import { posterApi } from '../api/posters';
+import type { ImageData as Poster } from '../api/posters/types';
 import ConfirmationModal from '../shared/ConfirmationModal';
 import toast from 'react-hot-toast';
 
@@ -12,7 +13,7 @@ interface ApiError {
 }
 
 export default function Posters() {
-  const [posters, setPosters] = useState<any>([]);
+  const [posters, setPosters] = useState<Poster[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   
@@ -88,7 +89,7 @@ export default function Posters() {
     try {
       setLoading(true);
       const data = await posterApi.getPosters();
-      setPosters(data);
+      setPosters(data as Poster[]);
     } catch (err: any) {
       const errorMessage = extractErrorMessage(err);
       showErrorToast(`Failed to load posters: ${errorMessage}`);
@@ -131,7 +132,7 @@ export default function Posters() {
   };
 
   // Show delete confirmation modal
-  const showDeleteConfirmation = (poster: any) => {
+  const showDeleteConfirmation = (poster: Poster) => {
     setModalConfig({
       title: 'Delete Poster',
       message: `Are you sure you want to delete "${poster.fileName}"? This action cannot be undone.`,
@@ -142,7 +143,7 @@ export default function Posters() {
   };
 
   // Show update confirmation modal
-  const showUpdateConfirmation = (poster: any) => {
+  const showUpdateConfirmation = (poster: Poster) => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -170,8 +171,7 @@ export default function Posters() {
       await posterApi.deletePoster(id.toString());
       
       // Update local state immediately for better UX
-      setPosters((prev: any[]) => prev.filter(poster => poster.id !== id));
-
+      setPosters(prev => prev.filter(poster => poster.id !== id));
       
       showSuccessToast(`"${fileName}" deleted successfully`);
       
@@ -246,7 +246,7 @@ export default function Posters() {
         title={modalConfig.title}
         message={modalConfig.message}
         onConfirm={modalConfig.onConfirm}
-        onClose={handleModalCancel as any}
+        onClose={handleModalCancel}
         type={modalConfig.type}
         confirmText={actionInProgress ? 'Processing...' : 'Confirm'}
         cancelText="Cancel"
@@ -290,7 +290,7 @@ export default function Posters() {
       ) : (
         /* Posters Grid */
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {posters.map((poster : any) => (
+          {posters.map((poster) => (
             <div 
               key={poster.id} 
               className="relative group overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300 bg-white"
@@ -354,9 +354,9 @@ export default function Posters() {
                   </span>
                 </div>
                 <div className="text-xs text-gray-500">
-                  <div>Uploaded: {formatDate(poster.createdAt)}</div>
+                  <div>Uploaded: {formatDate(typeof poster.createdAt === 'string' ? poster.createdAt : poster.createdAt.toISOString())}</div>
                   {poster.createdAt !== poster.updatedAt && (
-                    <div className="mt-1">Updated: {formatDate(poster.updatedAt)}</div>
+                    <div className="mt-1">Updated: {formatDate(typeof poster.updatedAt === 'string' ? poster.updatedAt : poster.updatedAt.toISOString())}</div>
                   )}
                 </div>
               </div>
